@@ -129,17 +129,13 @@ class KP_ImageOptimizer {
 	 * @return mixed
 	 */
 	public function image_optimize( $filename ) {
-		$type        = $this->optimizer->get_mime_type( $filename );
-		$image_types = array(
-			'image/jpeg',
-			'image/png',
-			'image/gif',
-		);
-
-		if ( in_array( $type, $image_types, true ) ) {
-			$this->chmod_command_files();
-			$this->optimizer->optimize( $filename );
-			$this->optimizer->convert_to_webp( $filename );
+		switch ( $this->optimizer->get_mime_type( $filename ) ) {
+			case 'image/jpeg':
+			case 'image/png':
+			case 'image/gif':
+				$this->optimizer->optimize( $filename );
+				$this->optimizer->convert_to_webp( $filename );
+				break;
 		}
 
 		return $filename;
@@ -240,27 +236,6 @@ class KP_ImageOptimizer {
 	 */
 	public function sanitize_option( $options ) {
 		return $options;
-	}
-
-	/**
-	 * Grant execute permission to the command.
-	 */
-	public function chmod_command_files() {
-		$files = apply_filters( 'KP_IMAGE_OPTIMIZER_COMMANDS', array(
-			'cwebp',
-			'gifsicle',
-			'jpegtran',
-			'pngquant',
-		) );
-		$index = ( is_array( $files ) ) ? count( $files ) : 0;
-
-		for ( $i = 0; $i < $index; $i ++ ) {
-			$command = $this->optimizer->get_binary_path( $files[ $i ] );
-
-			chmod( $command, 0755 );
-
-			unset( $files[ $i ] );
-		}
 	}
 
 	/**

@@ -111,9 +111,7 @@ class ImageOptimizer {
 	 * @param string $file
 	 */
 	public function optimize( $file ) {
-		$type = $this->get_mime_type( $file );
-
-		switch ( $type ) {
+		switch ( self::get_mime_type( $file ) ) {
 			case 'image/jpeg':
 				$command = self::get_binary_path( 'jpegtran' );
 
@@ -138,9 +136,7 @@ class ImageOptimizer {
 	 * @param string $file
 	 */
 	public function convert_to_webp( $file ) {
-		$type = $this->get_mime_type( $file );
-
-		switch ( $type ) {
+		switch ( self::get_mime_type( $file ) ) {
 			case 'image/jpeg':
 			case 'image/png':
 				$out     = self::get_filename_of_webp( $file );
@@ -172,10 +168,9 @@ class ImageOptimizer {
 	 * @return string
 	 */
 	public function get_binary_path( $bin ) {
-		$os_dir      = '';
-		$ext         = '';
-		$command_dir = str_replace( ' ', '\ ', $this->command_dir );
-		$command_dir = rtrim( $command_dir, '/' );
+		$os_dir            = '';
+		$ext               = '';
+		$this->command_dir = rtrim( $this->command_dir, '/' );
 
 		switch ( PHP_OS ) {
 			case 'WINNT':
@@ -196,6 +191,23 @@ class ImageOptimizer {
 				break;
 		}
 
-		return "{$command_dir}/{$os_dir}/{$bin}{$ext}";
+		$command = "{$this->command_dir}/{$os_dir}/{$bin}{$ext}";
+
+		if ( ! is_executable( "{$command}" ) ) {
+			chmod( "{$command}", 0755 );
+		}
+
+		return self::_sanitize_dir_name( $command );
+	}
+
+	/**
+	 * @param string $file
+	 *
+	 * @return string
+	 */
+	private function _sanitize_dir_name( $dir_name = '' ) {
+		$dir_name = str_replace( ' ', '\ ', $dir_name );
+
+		return $dir_name;
 	}
 }
