@@ -97,9 +97,10 @@ class KP_ImageOptimizer {
 		$this->command_dir            = apply_filters( 'KP_IMAGE_OPTIMIZER_DIR_BIN', KP_IMAGE_OPTIMIZER_DIR . '/bin' );
 		$this->option_name            = 'kp_image_optimize';
 		$this->option_group           = 'kp_image_optimize';
+		$this->option                 = get_option( $this->option_name );
 		$this->admin_menu_section     = 'kp_image_optimize_section';
 		$this->optimizer              = ImageOptimizer::get_instance();
-		$this->optimizer->image_dir   = $this->upload_dir['basedir'];
+		$this->optimizer->image_dir   = trailingslashit( $this->upload_dir['basedir'] );
 		$this->optimizer->command_dir = $this->command_dir;
 
 		add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
@@ -107,6 +108,7 @@ class KP_ImageOptimizer {
 		add_action( 'delete_attachment', array( &$this, 'delete_attachment' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 		add_action( 'admin_init', array( &$this, 'admin_menu_page_fields' ) );
+		add_action( $this->option_name, array( &$this, 'cron_all_file_optimize' ) );
 	}
 
 	public function wp_handle_upload( $file ) {
@@ -187,27 +189,32 @@ class KP_ImageOptimizer {
 	 */
 	public function admin_menu() {
 		add_media_page( __( 'Image Optimize', 'kp-image-optimizer' ), __( 'Image Optimize', 'kp-image-optimizer' ), 'manage_options', 'kp_image_optimize', array(
-				&$this,
-				'admin_menu_page',
-			) );
+			&$this,
+			'admin_menu_page',
+		) );
 	}
 
 	/**
 	 * Add admin menu page.
 	 */
 	public function admin_menu_page() {
+		if ( isset( $this->option['process'] ) && $this->option['process'] === 'true' ) {
+			$submit_attr = array( 'disabled' => 'disabled' );
+		} else {
+			$submit_attr = array();
+		}
 		?>
-		<div class="wrap">
-			<h2><?php echo apply_filters( 'the_title', __( 'Image Optimize', 'kp-image-optimizer' ) ); ?></h2>
+        <div class="wrap">
+            <h2><?php echo apply_filters( 'the_title', __( 'Image Optimize', 'kp-image-optimizer' ) ); ?></h2>
 
-			<form method="post" action="options.php" novalidate="novalidate">
+            <form method="post" action="options.php" novalidate="novalidate">
 				<?php
 				settings_fields( $this->option_group );
 				do_settings_sections( $this->option_group );
-				submit_button( esc_attr__( 'Start optimizing', 'kp-image-optimizer' ), 'primary', 'submit', true, array( 'disabled' => 'disabled' ) );
+				submit_button( esc_attr__( 'Start optimizing', 'kp-image-optimizer' ), 'primary', 'submit', true, $submit_attr );
 				?>
-			</form>
-		</div>
+            </form>
+        </div>
 		<?php
 	}
 
@@ -215,27 +222,87 @@ class KP_ImageOptimizer {
 	 * Add admin menu page fields.
 	 */
 	public function admin_menu_page_fields() {
-		register_setting( $this->option_group, $this->option_name, array( &$this, 'sanitize_option' ) );
+		register_setting( $this->option_group, $this->option_name, array( &$this, 'cron_event_register' ) );
 		add_settings_section( $this->admin_menu_section, null, null, $this->option_group );
-		add_settings_field( 'test', '<label for="test">Test</label>', array(
-				&$this,
-				'admin_menu_render_input_test',
-			), $this->option_group, $this->admin_menu_section );
-	}
-
-	public function admin_menu_render_input_test() {
-		echo 'test';
+		add_settings_field( 'progress', 'Progress', array(
+			&$this,
+			'admin_menu_render_input_progress',
+		), $this->option_group, $this->admin_menu_section );
 	}
 
 	/**
-	 * Sanitize option.
+	 * Render progress.
+	 */
+	public function admin_menu_render_input_progress() {
+		$current = ( isset( $this->option['current'] ) ) ? $this->option['current'] : 0;
+		$total   = ( isset( $this->option['total'] ) ) ? $this->option['total'] : 0;
+
+		if ( isset( $this->option['process'] ) && $this->option['process'] === 'true' ) {
+			if ( $this->option['total'] === 0 ) {
+				esc_html_e( 'Searching for files.', 'kp-image-optimizer' );
+			} else {
+				echo "{$current} / {$total}";
+			}
+		} else {
+			echo '<input type="hidden" name="' . $this->option_name . '[process]" value="true">';
+			esc_html_e( 'Under suspension.', 'kp-image-optimizer' );
+		}
+	}
+
+	/**
+	 * Cron event register.
 	 *
 	 * @param array $options
 	 *
 	 * @return mixed
 	 */
-	public function sanitize_option( $options ) {
+	public function cron_event_register( $options ) {
+		if ( isset( $options['process'] ) ) {
+			$now                = time();
+			$run                = false;
+			$options['process'] = 'true';
+
+			if ( ! isset( $this->option['process'] ) || ( isset( $this->option['process'] ) && $this->option['process'] === 'false' ) ) {
+				$run = true;
+			}
+
+			if ( $run && ! wp_next_scheduled( $this->option_name ) ) {
+				wp_schedule_single_event( $now, $this->option_name );
+				spawn_cron( $now );
+			}
+		}
+
 		return $options;
+	}
+
+	/**
+	 * Optimize all images.
+	 */
+	public function cron_all_file_optimize() {
+		$this->option['process'] = 'true';
+		update_option( $this->option_name, $this->option );
+
+		$images = $this->optimizer->get_file_list();
+
+		if ( ! empty( $images ) ) {
+			$total                 = count( $images );
+			$this->option          = get_option( $this->option_name );
+			$this->option['total'] = $total;
+
+			update_option( $this->option_name, $this->option, false );
+
+			foreach ( $images as $k => $v ) {
+				$this->image_optimize( $v );
+				unset( $images[ $k ] );
+
+				$this->option['current'] = $total --;
+
+				update_option( $this->option_name, $this->option, false );
+			}
+		}
+
+		$this->option['process'] = 'false';
+		update_option( $this->option_name, $this->option, false );
 	}
 
 	/**

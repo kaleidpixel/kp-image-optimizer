@@ -78,28 +78,29 @@ class ImageOptimizer {
 	 *
 	 * @return array|bool
 	 */
-	public function get_file_list() {
-		$result = false;
+	public function get_file_list( $dir = '' ) {
+		$result = array();
+		$dir    = ( empty( $dir ) ) ? $this->image_dir: $dir;
+		$dir    = trailingslashit( $dir );
 
-		if ( file_exists( $this->image_dir ) ) {
-			$list     = array();
-			$iterator = new \RecursiveDirectoryIterator( $this->image_dir );
-			$iterator = new \RecursiveIteratorIterator( $iterator );
+		if ( is_dir( $dir ) ) {
+			$files = glob( $dir . '*', GLOB_BRACE );
 
-			foreach ( $iterator as $info ) {
-				if ( $info->isFile() && preg_match( '#.*?(jpe?g|png)#i', $info->getPathname() ) ) {
-					$path_name = $info->getPathname();
-					$type      = self::get_mime_type( $path_name );
-
-					if ( $type === 'image/jpeg' || $type === 'image/png' ) {
-						$list[] = $path_name;
+			foreach ( $files as $v ) {
+				if ( is_file( $v ) ) {
+					switch ( self::get_mime_type( $v ) ) {
+						case 'image/jpeg':
+						case 'image/png':
+						case 'image/gif':
+							$result[] = $v;
+							break;
 					}
+				}
 
-					unset( $path_name, $type );
+				if ( is_dir( $v ) ) {
+					$result = array_merge( $result , self::get_file_list( $v ) );
 				}
 			}
-
-			$result = $list;
 		}
 
 		return $result;
