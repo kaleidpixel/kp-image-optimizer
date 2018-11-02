@@ -288,7 +288,7 @@ class KP_ImageOptimizer {
 		$time = microtime( true ) - $start;
 		self::debug_log( "Step 1: {$time}" );
 
-		$images = $this->optimizer->get_file_list_old();
+		$images = $this->optimizer->get_file_list();
 
 		$time = microtime( true ) - $start;
 		self::debug_log( "Step 2: {$time}" );
@@ -304,7 +304,7 @@ class KP_ImageOptimizer {
 			self::debug_log( "Step 3: {$time}" );
 
 			foreach ( $images as $k => $v ) {
-//				$this->image_optimize( $v );
+				$this->image_optimize( $v );
 				unset( $images[ $k ] );
 
 				$this->option['current'] = $total --;
@@ -315,6 +315,8 @@ class KP_ImageOptimizer {
 			$time = microtime( true ) - $start;
 			self::debug_log( "Step 4: {$time}" );
 		}
+
+		sleep( 1 );
 
 		$this->option['process'] = 'false';
 		update_option( $this->option_name, $this->option, false );

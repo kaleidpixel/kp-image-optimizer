@@ -76,11 +76,34 @@ class ImageOptimizer {
 	/**
 	 * Create list of all image files in a specific directory.
 	 *
+	 * @return array
+	 */
+	public function get_file_list() {
+		$result          = array();
+		$this->image_dir = self::_add_trailing_slash( $this->image_dir );
+
+		if ( is_dir( $this->image_dir ) ) {
+			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS ) );
+			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif)$/i', \RecursiveRegexIterator::MATCH );
+
+			foreach ( $iterator as $path ) {
+				$result[] = $path;
+			}
+
+			unset( $iterator );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Create list of all image files in a specific directory.
+	 *
 	 * @param string $dir
 	 *
 	 * @return array
 	 */
-	public function get_file_list( $dir = '' ) {
+	public function get_file_list_old( $dir = '' ) {
 		$result = array();
 		$dir    = ( empty( $dir ) ) ? $this->image_dir: $dir;
 		$dir    = self::_delete_trailing_slash( $dir );
@@ -100,34 +123,11 @@ class ImageOptimizer {
 				}
 
 				if ( is_dir( $v ) ) {
-					$result = array_merge( $result , self::get_file_list( $v ) );
+					$result = array_merge( $result , self::get_file_list_old( $v ) );
 				}
 			}
 
 			unset( $files );
-		}
-
-		return $result;
-	}
-
-	/**
-	 * 特定のディレクトリ内の全画像ファイルをリストを作成
-	 *
-	 * @return null|object
-	 */
-	public function get_file_list_old() {
-		$result          = null;
-		$this->image_dir = self::_add_trailing_slash( $this->image_dir );
-
-		if ( is_dir( $this->image_dir ) ) {
-			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS ) );
-			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif)$/i', \RecursiveRegexIterator::MATCH );
-
-			foreach ( $iterator as $path ) {
-				$result[] = $path;
-			}
-
-			unset( $iterator );
 		}
 
 		return $result;
