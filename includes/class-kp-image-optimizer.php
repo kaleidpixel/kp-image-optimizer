@@ -238,7 +238,7 @@ class KP_ImageOptimizer {
 		$total   = ( isset( $this->option['total'] ) ) ? $this->option['total'] : 0;
 
 		if ( isset( $this->option['process'] ) && $this->option['process'] === 'true' ) {
-			if ( $this->option['total'] === 0 ) {
+			if ( ! isset( $this->option['total'] ) || ( isset( $this->option['total'] ) && $this->option['total'] === 0 ) ) {
 				esc_html_e( 'Searching for files.', 'kp-image-optimizer' );
 			} else {
 				echo "{$current} / {$total}";
@@ -279,30 +279,48 @@ class KP_ImageOptimizer {
 	 * Optimize all images.
 	 */
 	public function cron_all_file_optimize() {
+		$start = microtime( true );
+		self::debug_log( "Start: {$start}" );
+
 		$this->option['process'] = 'true';
 		update_option( $this->option_name, $this->option );
 
-		$images = $this->optimizer->get_file_list();
+		$time = microtime( true ) - $start;
+		self::debug_log( "Step 1: {$time}" );
 
-		if ( ! empty( $images ) ) {
-			$total                 = count( $images );
+		$images = $this->optimizer->get_file_list_old();
+
+		$time = microtime( true ) - $start;
+		self::debug_log( "Step 2: {$time}" );
+
+		if ( is_array( $images ) && ! empty( $images ) ) {
+		    $total                 = count( $images );
 			$this->option          = get_option( $this->option_name );
 			$this->option['total'] = $total;
 
 			update_option( $this->option_name, $this->option, false );
 
+			$time = microtime( true ) - $start;
+			self::debug_log( "Step 3: {$time}" );
+
 			foreach ( $images as $k => $v ) {
-				$this->image_optimize( $v );
+//				$this->image_optimize( $v );
 				unset( $images[ $k ] );
 
 				$this->option['current'] = $total --;
 
 				update_option( $this->option_name, $this->option, false );
 			}
+
+			$time = microtime( true ) - $start;
+			self::debug_log( "Step 4: {$time}" );
 		}
 
 		$this->option['process'] = 'false';
 		update_option( $this->option_name, $this->option, false );
+
+		$time = microtime( true ) - $start;
+		self::debug_log( "Finish: {$time}" );
 	}
 
 	/**

@@ -76,15 +76,17 @@ class ImageOptimizer {
 	/**
 	 * Create list of all image files in a specific directory.
 	 *
-	 * @return array|bool
+	 * @param string $dir
+	 *
+	 * @return array
 	 */
 	public function get_file_list( $dir = '' ) {
 		$result = array();
 		$dir    = ( empty( $dir ) ) ? $this->image_dir: $dir;
-		$dir    = trailingslashit( $dir );
+		$dir    = self::_delete_trailing_slash( $dir );
 
 		if ( is_dir( $dir ) ) {
-			$files = glob( $dir . '*', GLOB_BRACE );
+			$files = glob( "{$dir}/*", GLOB_BRACE );
 
 			foreach ( $files as $v ) {
 				if ( is_file( $v ) ) {
@@ -101,6 +103,31 @@ class ImageOptimizer {
 					$result = array_merge( $result , self::get_file_list( $v ) );
 				}
 			}
+
+			unset( $files );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * 特定のディレクトリ内の全画像ファイルをリストを作成
+	 *
+	 * @return null|object
+	 */
+	public function get_file_list_old() {
+		$result          = null;
+		$this->image_dir = self::_add_trailing_slash( $this->image_dir );
+
+		if ( is_dir( $this->image_dir ) ) {
+			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS ) );
+			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif)$/i', \RecursiveRegexIterator::MATCH );
+
+			foreach ( $iterator as $path ) {
+				$result[] = $path;
+			}
+
+			unset( $iterator );
 		}
 
 		return $result;
@@ -171,7 +198,7 @@ class ImageOptimizer {
 	public function get_binary_path( $bin ) {
 		$os_dir            = '';
 		$ext               = '';
-		$this->command_dir = rtrim( $this->command_dir, '/' );
+		$this->command_dir = self::_delete_trailing_slash( $this->command_dir );
 
 		switch ( PHP_OS ) {
 			case 'WINNT':
@@ -202,7 +229,9 @@ class ImageOptimizer {
 	}
 
 	/**
-	 * @param string $file
+	 * Sanitize dir name.
+	 *
+	 * @param string $dir_name
 	 *
 	 * @return string
 	 */
@@ -210,5 +239,29 @@ class ImageOptimizer {
 		$dir_name = str_replace( ' ', '\ ', $dir_name );
 
 		return $dir_name;
+	}
+
+	/**
+	 * Delete trailing slash.
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	private function _delete_trailing_slash( $str = '' ) {
+		return rtrim( $str, '/\\' );
+	}
+
+	/**
+	 * Add trailing slash.
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	private function _add_trailing_slash( $str = '' ) {
+		$str = self::_delete_trailing_slash( $str );
+
+		return "{$str}/";
 	}
 }
