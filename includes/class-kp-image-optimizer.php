@@ -303,7 +303,6 @@ class KP_ImageOptimizer {
 
 				update_option( $this->option_name, $this->option, false );
 			}
-
 		}
 
 		sleep( 1 );

@@ -78,6 +78,36 @@ class ImageOptimizer {
 	}
 
 	/**
+	 * Is CLI
+	 *
+	 * @return bool
+	 */
+	public function is_cli() {
+		return PHP_SAPI === 'cli';
+	}
+
+	/**
+	 * Optimize all images.
+	 */
+	public function doing() {
+		$ttl = ini_get( 'max_execution_time' );
+
+		set_time_limit( 0 );
+
+		$images = $this->get_file_list_in_glob();
+
+		if ( is_array( $images ) && ! empty( $images ) ) {
+			foreach ( $images as $k => $v ) {
+				$this->optimize( $v );
+				$this->convert_to_webp( $v );
+				unset( $images[ $k ] );
+			}
+		}
+
+		set_time_limit( $ttl );
+	}
+
+	/**
 	 * Create list of all image files in a specific directory.
 	 *
 	 * @return array
