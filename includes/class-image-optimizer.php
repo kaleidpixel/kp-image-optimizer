@@ -86,7 +86,7 @@ class ImageOptimizer {
 			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS ) );
 			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif)$/i', \RecursiveRegexIterator::MATCH );
 
-			foreach ( $iterator as $path ) {
+			foreach ( $iterator as $path => $info ) {
 				$result[] = $path;
 			}
 
