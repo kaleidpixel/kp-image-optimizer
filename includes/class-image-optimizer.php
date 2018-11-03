@@ -5,7 +5,7 @@
  * @package    KALEIDPIXEL
  * @author     KUCKLU <hello@kuck1u.me>
  * @copyright  2018 Kaleid Pixel
- * @license    MIT License http://www.opensource.org/licenses/mit-license.html
+ * @license    GNU General Public License v3.0
  * @version    1.0.0
  **/
 
