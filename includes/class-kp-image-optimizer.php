@@ -279,19 +279,10 @@ class KP_ImageOptimizer {
 	 * Optimize all images.
 	 */
 	public function cron_all_file_optimize() {
-		$start = microtime( true );
-		self::debug_log( "Start: {$start}" );
-
 		$this->option['process'] = 'true';
 		update_option( $this->option_name, $this->option );
 
-		$time = microtime( true ) - $start;
-		self::debug_log( "Step 1: {$time}" );
-
-		$images = $this->optimizer->get_file_list();
-
-		$time = microtime( true ) - $start;
-		self::debug_log( "Step 2: {$time}" );
+		$images = $this->optimizer->get_file_list_in_glob();
 
 		if ( is_array( $images ) && ! empty( $images ) ) {
 		    $total                 = count( $images );
@@ -299,9 +290,6 @@ class KP_ImageOptimizer {
 			$this->option['total'] = $total;
 
 			update_option( $this->option_name, $this->option, false );
-
-			$time = microtime( true ) - $start;
-			self::debug_log( "Step 3: {$time}" );
 
 			foreach ( $images as $k => $v ) {
 				$this->image_optimize( $v );
@@ -312,17 +300,12 @@ class KP_ImageOptimizer {
 				update_option( $this->option_name, $this->option, false );
 			}
 
-			$time = microtime( true ) - $start;
-			self::debug_log( "Step 4: {$time}" );
 		}
 
 		sleep( 1 );
 
 		$this->option['process'] = 'false';
 		update_option( $this->option_name, $this->option, false );
-
-		$time = microtime( true ) - $start;
-		self::debug_log( "Finish: {$time}" );
 	}
 
 	/**

@@ -83,11 +83,12 @@ class ImageOptimizer {
 		$this->image_dir = self::_add_trailing_slash( $this->image_dir );
 
 		if ( is_dir( $this->image_dir ) ) {
-			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS ) );
+			$iterator = new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS );
+			$iterator = new \RecursiveIteratorIterator( $iterator );
 			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif)$/i', \RecursiveRegexIterator::MATCH );
 
-			foreach ( $iterator as $path => $info ) {
-				$result[] = $path;
+			foreach ( $iterator as $path ) {
+				$result[] = $path[0];
 			}
 
 			unset( $iterator );
@@ -103,7 +104,7 @@ class ImageOptimizer {
 	 *
 	 * @return array
 	 */
-	public function get_file_list_old( $dir = '' ) {
+	public function get_file_list_in_glob( $dir = '' ) {
 		$result = array();
 		$dir    = ( empty( $dir ) ) ? $this->image_dir: $dir;
 		$dir    = self::_delete_trailing_slash( $dir );
