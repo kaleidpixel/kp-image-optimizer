@@ -124,7 +124,7 @@ class ImageOptimizer {
 				}
 
 				if ( is_dir( $v ) ) {
-					$result = array_merge( $result , self::get_file_list_old( $v ) );
+					$result = array_merge( $result , self::get_file_list_in_glob( $v ) );
 				}
 			}
 
