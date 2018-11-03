@@ -279,13 +279,17 @@ class KP_ImageOptimizer {
 	 * Optimize all images.
 	 */
 	public function cron_all_file_optimize() {
+		$ttl = ini_get( 'max_execution_time' );
+
+		set_time_limit( 0 );
+
 		$this->option['process'] = 'true';
 		update_option( $this->option_name, $this->option );
 
 		$images = $this->optimizer->get_file_list_in_glob();
 
 		if ( is_array( $images ) && ! empty( $images ) ) {
-		    $total                 = count( $images );
+			$total                 = count( $images );
 			$this->option          = get_option( $this->option_name );
 			$this->option['total'] = $total;
 
@@ -295,7 +299,7 @@ class KP_ImageOptimizer {
 				$this->image_optimize( $v );
 				unset( $images[ $k ] );
 
-				$this->option['current'] = $total --;
+				$this->option['current'] = -- $total;
 
 				update_option( $this->option_name, $this->option, false );
 			}
@@ -306,6 +310,8 @@ class KP_ImageOptimizer {
 
 		$this->option['process'] = 'false';
 		update_option( $this->option_name, $this->option, false );
+
+		set_time_limit( $ttl );
 	}
 
 	/**
