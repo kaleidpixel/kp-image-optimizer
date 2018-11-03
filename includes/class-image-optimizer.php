@@ -11,6 +11,10 @@
 
 namespace KALEIDPIXEL\Module;
 
+if ( realpath( $_SERVER['SCRIPT_FILENAME'] ) === realpath( __FILE__ ) ) {
+	exit;
+}
+
 /**
  * Class ImageOptimizer
  *
