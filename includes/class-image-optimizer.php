@@ -88,13 +88,23 @@ class ImageOptimizer {
 
 	/**
 	 * Optimize all images.
+	 *
+	 * @param string $mode Select the scan mode in the directory.
 	 */
-	public function doing() {
+	public function doing( $mode = '' ) {
 		$ttl = ini_get( 'max_execution_time' );
 
 		set_time_limit( 0 );
 
-		$images = $this->get_file_list_in_glob();
+		switch ( $mode ) {
+			case 'iterator':
+			default:
+				$images = $this->get_file_list();
+				break;
+			case 'glob':
+				$images = $this->get_file_list_in_glob();
+				break;
+		}
 
 		if ( is_array( $images ) && ! empty( $images ) ) {
 			foreach ( $images as $k => $v ) {
