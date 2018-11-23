@@ -15,6 +15,8 @@ if ( realpath( $_SERVER['SCRIPT_FILENAME'] ) === realpath( __FILE__ ) ) {
 	exit;
 }
 
+use enshrined\svgSanitize\Sanitizer;
+
 /**
  * Class ImageOptimizer
  *
@@ -150,7 +152,7 @@ class ImageOptimizer {
 	 */
 	public function get_file_list_in_glob( $dir = '' ) {
 		$result = array();
-		$dir    = ( empty( $dir ) ) ? $this->image_dir: $dir;
+		$dir    = ( empty( $dir ) ) ? $this->image_dir : $dir;
 		$dir    = self::_delete_trailing_slash( $dir );
 
 		if ( is_dir( $dir ) ) {
@@ -162,13 +164,14 @@ class ImageOptimizer {
 						case 'image/jpeg':
 						case 'image/png':
 						case 'image/gif':
+						case 'image/svg+xml':
 							$result[] = $v;
 							break;
 					}
 				}
 
 				if ( is_dir( $v ) ) {
-					$result = array_merge( $result , self::get_file_list_in_glob( $v ) );
+					$result = array_merge( $result, self::get_file_list_in_glob( $v ) );
 				}
 			}
 
@@ -200,6 +203,20 @@ class ImageOptimizer {
 
 				exec( "{$command} -O2 '{$file}' > '{$file}' 2>&1", $result );
 				break;
+			case 'image/svg+xml':
+				$sanitizer = new Sanitizer();
+
+				$sanitizer->minify( true );
+
+				$dirtySVG = file_get_contents( $file );
+				$cleanSVG = $sanitizer->sanitize( $dirtySVG );
+
+				if ( $cleanSVG === false ) {
+					break;
+				}
+
+				file_put_contents( $file, $cleanSVG );
+				break;
 		}
 	}
 
@@ -228,7 +245,7 @@ class ImageOptimizer {
 	 * @return mixed
 	 */
 	public function get_filename_of_webp( $file ) {
-		$ext  = pathinfo( $file, PATHINFO_EXTENSION );
+		$ext = pathinfo( $file, PATHINFO_EXTENSION );
 
 		return str_replace( ".{$ext}", '.webp', $file );
 	}

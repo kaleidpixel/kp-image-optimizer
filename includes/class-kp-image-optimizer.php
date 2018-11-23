@@ -103,6 +103,8 @@ class KP_ImageOptimizer {
 		$this->optimizer->image_dir   = trailingslashit( $this->upload_dir['basedir'] );
 		$this->optimizer->command_dir = $this->command_dir;
 
+		add_filter( 'upload_mimes', array( &$this, 'allow_svg' ) );
+		add_filter( 'wp_check_filetype_and_ext', array( &$this, 'fix_mime_type_svg' ), 75, 4 );
 		add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
 		add_filter( 'image_make_intermediate_size', array( &$this, 'image_make_intermediate_size' ) );
 		add_action( 'delete_attachment', array( &$this, 'delete_attachment' ) );
@@ -124,6 +126,53 @@ class KP_ImageOptimizer {
 	}
 
 	/**
+	 * Allow SVG Uploads
+     *
+	 * @thanks @safe-svg
+	 *
+	 * @param $mimes
+	 *
+	 * @return mixed
+	 */
+	public function allow_svg( $mimes ) {
+		$mimes['svg']  = 'image/svg+xml';
+		$mimes['svgz'] = 'image/svg+xml';
+
+		return $mimes;
+	}
+
+	/**
+	 * Fixes the issue in WordPress 4.7.1 being unable to correctly identify SVGs
+	 *
+	 * @thanks @lewiscowles
+	 * @thanks @safe-svg
+	 *
+	 * @param null $data
+	 * @param null $file
+	 * @param null $filename
+	 * @param null $mimes
+	 *
+	 * @return null
+	 */
+	public function fix_mime_type_svg( $data = null, $file = null, $filename = null, $mimes = null ) {
+		$ext = isset( $data['ext'] ) ? $data['ext'] : '';
+
+		if ( strlen( $ext ) < 1 ) {
+			$exploded = explode( '.', $filename );
+			$ext      = strtolower( end( $exploded ) );
+		}
+		if ( $ext === 'svg' ) {
+			$data['type'] = 'image/svg+xml';
+			$data['ext']  = 'svg';
+		} elseif ( $ext === 'svgz' ) {
+			$data['type'] = 'image/svg+xml';
+			$data['ext']  = 'svgz';
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Image Optimize.
 	 *
 	 * @param string $filename
@@ -135,6 +184,7 @@ class KP_ImageOptimizer {
 			case 'image/jpeg':
 			case 'image/png':
 			case 'image/gif':
+			case 'image/svg+xml':
 				$this->optimizer->optimize( $filename );
 				$this->optimizer->convert_to_webp( $filename );
 				break;
