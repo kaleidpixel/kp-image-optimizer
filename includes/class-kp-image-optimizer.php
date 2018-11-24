@@ -329,14 +329,24 @@ class KP_ImageOptimizer {
 	 * Optimize all images.
 	 */
 	public function cron_all_file_optimize() {
-		$ttl = ini_get( 'max_execution_time' );
+	    $ttl  = ini_get( 'max_execution_time' );
+		$mode = apply_filters( 'kp_image_optimizer_directory_scan_mode', 'iterator' );
 
 		set_time_limit( 0 );
 
 		$this->option['process'] = 'true';
 		update_option( $this->option_name, $this->option );
 
-		$images = $this->optimizer->get_file_list_in_glob();
+		switch ( $mode ) {
+			case 'iterator':
+			default:
+				$images = $this->optimizer->get_file_list();
+				break;
+			case 'glob':
+				$images = $this->optimizer->get_file_list_in_glob();
+				break;
+		}
+
 
 		if ( is_array( $images ) && ! empty( $images ) ) {
 			$total                 = count( $images );
