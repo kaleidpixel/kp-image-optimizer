@@ -13,4 +13,5 @@ WordPress Image Compression Plugin.
   https://github.com/imagemin/jpegtran-bin/blob/master/license
 * pngquant: GPL v3 License  
   https://github.com/kornelski/pngquant/blob/master/COPYRIGHT
-  
+* svg-sanitizer: GPL v2 License  
+  https://github.com/darylldoyle/svg-sanitizer/blob/master/LICENSE
