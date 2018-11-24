@@ -158,9 +158,9 @@ class KP_ImageOptimizer {
 		$ext = isset( $data['ext'] ) ? $data['ext'] : '';
 
 		if ( strlen( $ext ) < 1 ) {
-			$exploded = explode( '.', $filename );
-			$ext      = strtolower( end( $exploded ) );
+			$ext = pathinfo( $filename, PATHINFO_EXTENSION );
 		}
+
 		if ( $ext === 'svg' ) {
 			$data['type'] = 'image/svg+xml';
 			$data['ext']  = 'svg';
@@ -330,7 +330,7 @@ class KP_ImageOptimizer {
 	 */
 	public function cron_all_file_optimize() {
 	    $ttl  = ini_get( 'max_execution_time' );
-		$mode = apply_filters( 'kp_image_optimizer_directory_scan_mode', 'iterator' );
+		$mode = apply_filters( 'kp_image_optimizer_directory_scan_mode', '' );
 
 		set_time_limit( 0 );
 
@@ -338,15 +338,13 @@ class KP_ImageOptimizer {
 		update_option( $this->option_name, $this->option );
 
 		switch ( $mode ) {
-			case 'iterator':
-			default:
-				$images = $this->optimizer->get_file_list();
-				break;
 			case 'glob':
 				$images = $this->optimizer->get_file_list_in_glob();
 				break;
+			default:
+				$images = $this->optimizer->get_file_list();
+				break;
 		}
-
 
 		if ( is_array( $images ) && ! empty( $images ) ) {
 			$total                 = count( $images );
