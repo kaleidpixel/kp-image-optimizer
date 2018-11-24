@@ -99,12 +99,11 @@ class ImageOptimizer {
 		set_time_limit( 0 );
 
 		switch ( $mode ) {
-			case 'iterator':
-			default:
-				$images = $this->get_file_list();
-				break;
 			case 'glob':
 				$images = $this->get_file_list_in_glob();
+				break;
+			default:
+				$images = $this->get_file_list();
 				break;
 		}
 
@@ -131,10 +130,21 @@ class ImageOptimizer {
 		if ( is_dir( $this->image_dir ) ) {
 			$iterator = new \RecursiveDirectoryIterator( $this->image_dir, \FileSystemIterator::SKIP_DOTS );
 			$iterator = new \RecursiveIteratorIterator( $iterator );
-			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif)$/i', \RecursiveRegexIterator::MATCH );
+			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif|svg)$/i', \RecursiveRegexIterator::MATCH );
 
 			foreach ( $iterator as $info ) {
-				$result[] = $info->getPathname();
+				$file = $info->getPathname();
+
+				switch ( self::get_mime_type( $file ) ) {
+					case 'image/jpeg':
+					case 'image/png':
+					case 'image/gif':
+					case 'image/svg+xml':
+						$result[] = $file;
+						break;
+				}
+
+				unset( $file );
 			}
 
 			unset( $iterator );
