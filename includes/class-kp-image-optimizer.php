@@ -110,6 +110,7 @@ class KP_ImageOptimizer {
 		add_action( 'delete_attachment', array( &$this, 'delete_attachment' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 		add_action( 'admin_init', array( &$this, 'admin_menu_page_fields' ) );
+		add_action( 'init', array( &$this, 'init' ) );
 		add_action( $this->option_name, array( &$this, 'cron_all_file_optimize' ) );
 	}
 
@@ -124,6 +125,15 @@ class KP_ImageOptimizer {
 
 		return $filename;
 	}
+
+	/**
+	 * Setup.
+	 */
+	public function init() {
+		if ( is_admin() ) {
+			load_plugin_textdomain( 'kp-image-optimizer', false, plugin_basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages/' );
+		}
+    }
 
 	/**
 	 * Allow SVG Uploads
@@ -235,6 +245,12 @@ class KP_ImageOptimizer {
 	}
 
 	/**
+	 * Load language file.
+	 */
+	public function load_plugin_textdomain() {
+    }
+
+	/**
 	 * Add admin menu.
 	 */
 	public function admin_menu() {
@@ -274,7 +290,7 @@ class KP_ImageOptimizer {
 	public function admin_menu_page_fields() {
 		register_setting( $this->option_group, $this->option_name, array( &$this, 'cron_event_register' ) );
 		add_settings_section( $this->admin_menu_section, null, null, $this->option_group );
-		add_settings_field( 'progress', 'Progress', array(
+		add_settings_field( 'progress', __( 'Progress', 'kp-image-optimizer' ), array(
 			&$this,
 			'admin_menu_render_input_progress',
 		), $this->option_group, $this->admin_menu_section );
