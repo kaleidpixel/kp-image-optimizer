@@ -6,7 +6,7 @@
  * @author     KUCKLU <hello@kuck1u.me>
  * @copyright  2018 Kaleid Pixel
  * @license    GNU General Public License v2.0 or later version
- * @version    1.0.0
+ * @version    0.0.1
  **/
 
 namespace KALEIDPIXEL\WP;
@@ -18,11 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 use KALEIDPIXEL\Module\ImageOptimizer;
 
 /**
- * Class KP_ImageOptimizer
+ * Class WP_ImageOptimizer
  *
  * @package KALEIDPIXEL
  */
-class KP_ImageOptimizer {
+class WP_ImageOptimizer {
 	/**
 	 * @var array Holds the instance of this class
 	 */

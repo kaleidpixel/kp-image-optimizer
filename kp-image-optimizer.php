@@ -40,8 +40,9 @@ define( 'KP_IMAGE_OPTIMIZER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) 
 define( 'KP_IMAGE_OPTIMIZER_BIN', KP_IMAGE_OPTIMIZER_DIR . '/vendor/kaleidpixel/image-optimizer/bin' );
 
 require_once KP_IMAGE_OPTIMIZER_DIR . '/vendor/autoload.php';
-require_once KP_IMAGE_OPTIMIZER_DIR . '/includes/class-kp-image-optimizer.php';
+require_once KP_IMAGE_OPTIMIZER_DIR . '/includes/class-optimizer.php';
 
-$_KP_IMAGE_OPTIMIZER_INSTANCE = apply_filters( 'KP_IMAGE_OPTIMIZER_INSTANCE', array( 'KALEIDPIXEL\WP\KP_ImageOptimizer', 'get_instance' ) );
+$_KP_IMAGE_OPTIMIZER_INSTANCE = apply_filters( 'KP_IMAGE_OPTIMIZER_INSTANCE', array( 'KALEIDPIXEL\WP\WP_ImageOptimizer', 'get_instance' ) );
 
 add_action( 'plugins_loaded', $_KP_IMAGE_OPTIMIZER_INSTANCE );
+unset( $_KP_IMAGE_OPTIMIZER_INSTANCE );
