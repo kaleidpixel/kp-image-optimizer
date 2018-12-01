@@ -69,7 +69,7 @@ class WP_ImageOptimizer {
 	 * @return self
 	 */
 	public static function get_instance() {
-		$class = get_called_class();
+		$class = self::get_called_class();
 
 		if ( ! isset( self::$instance[ $class ] ) ) {
 			self::$instance[ $class ] = new $class();
