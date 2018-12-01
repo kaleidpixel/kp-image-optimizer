@@ -40,24 +40,24 @@
     },
     {
         "name": "kaleidpixel/image-optimizer",
-        "version": "0.1.0",
-        "version_normalized": "0.1.0.0",
+        "version": "0.1.1",
+        "version_normalized": "0.1.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/kaleidpixel/image-optimizer.git",
-            "reference": "22e8663993a34e34a9b5d23cb986c6645e5353a8"
+            "reference": "d7da131fb48dcd986254b386ab9327a797fe1fa3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kaleidpixel/image-optimizer/zipball/22e8663993a34e34a9b5d23cb986c6645e5353a8",
-            "reference": "22e8663993a34e34a9b5d23cb986c6645e5353a8",
+            "url": "https://api.github.com/repos/kaleidpixel/image-optimizer/zipball/d7da131fb48dcd986254b386ab9327a797fe1fa3",
+            "reference": "d7da131fb48dcd986254b386ab9327a797fe1fa3",
             "shasum": ""
         },
         "require": {
             "enshrined/svg-sanitize": "0.*",
             "php": ">=5.6"
         },
-        "time": "2018-12-01T05:16:36+00:00",
+        "time": "2018-12-01T07:30:04+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

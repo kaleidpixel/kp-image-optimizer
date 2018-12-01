@@ -105,11 +105,13 @@ class WP_ImageOptimizer {
 		add_filter( 'wp_check_filetype_and_ext', array( &$this, 'fix_mime_type_svg' ), 75, 4 );
 		add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
 		add_filter( 'image_make_intermediate_size', array( &$this, 'image_make_intermediate_size' ) );
+		add_filter( 'wp_prepare_attachment_for_js', array( &$this, 'wp_prepare_attachment_for_js' ), 10, 2 );
 		add_action( 'delete_attachment', array( &$this, 'delete_attachment' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 		add_action( 'admin_init', array( &$this, 'admin_menu_page_fields' ) );
 		add_action( 'init', array( &$this, 'init' ) );
 		add_action( $this->option_name, array( &$this, 'cron_all_file_optimize' ) );
+		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_enqueue_scripts' ) );
 	}
 
 	public function wp_handle_upload( $file ) {
@@ -136,8 +138,6 @@ class WP_ImageOptimizer {
 	/**
 	 * Allow SVG Uploads
 	 *
-	 * @thanks @safe-svg
-	 *
 	 * @param $mimes
 	 *
 	 * @return mixed
@@ -151,9 +151,6 @@ class WP_ImageOptimizer {
 
 	/**
 	 * Fixes the issue in WordPress 4.7.1 being unable to correctly identify SVGs
-	 *
-	 * @thanks @lewiscowles
-	 * @thanks @safe-svg
 	 *
 	 * @param null $data
 	 * @param null $file
@@ -178,6 +175,55 @@ class WP_ImageOptimizer {
 		}
 
 		return $data;
+	}
+
+	/**
+     * Browsers may or may not show SVG files properly without a height/width.
+     *
+     * @see https://ja.wordpress.org/plugins/scalable-vector-graphics-svg/
+     *
+	 * @param $response
+	 * @param $attachment
+	 *
+	 * @return mixed
+	 */
+	public function wp_prepare_attachment_for_js( $response, $attachment ) {
+		if ( $response['mime'] == 'image/svg+xml' && empty( $response['sizes'] ) ) {
+			$svg_file_path = get_attached_file( $attachment->ID );
+			$dimensions    = (object) array( 'width' => 0, 'height' => 0 );
+
+			if ( function_exists( 'simplexml_load_file' ) ) {
+				$svg        = simplexml_load_file( $svg_file_path );
+				$attributes = $svg ? $svg->attributes() : false;
+
+				if ( isset( $attributes->width, $attributes->height ) ) {
+					$width      = (string) $attributes->width;
+					$height     = (string) $attributes->height;
+					$dimensions = (object) array( 'width' => $width, 'height' => $height );
+				}
+			}
+
+			$response['sizes'] = array(
+				'full' => array(
+					'url'         => $response['url'],
+					'width'       => $dimensions->width,
+					'height'      => $dimensions->height,
+					'orientation' => $dimensions->width > $dimensions->height ? 'landscape' : 'portrait'
+				)
+			);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Browsers may or may not show SVG files properly without a height/width.
+	 *
+	 * @see https://ja.wordpress.org/plugins/scalable-vector-graphics-svg/
+	 */
+	public function admin_enqueue_scripts() {
+		wp_add_inline_style( 'wp-admin', ".media .media-icon img[src$='.svg'] { width: auto; height: auto; }" );
+		wp_add_inline_style( 'wp-admin', "#postimagediv .inside img[src$='.svg'] { width: 100%; height: auto; }" );
 	}
 
 	/**
