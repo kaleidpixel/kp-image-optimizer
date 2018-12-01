@@ -1,17 +1,15 @@
-# WP Image Optimizer
+# KP Image Optimizer
 WordPress Image Compression Plugin.
 
 ## Install
-To install "WP Image Optimizer":
+To install "KP Image Optimizer":
 
-```$bash
-# git clone git@github.com:kaleidpixel/wp-image-optimizer.git /app/public/wp-content/kp-image-optimizer
-```
-
-Activate the plugin through the "Plugins" menu in WordPress.
+1. [Download this archive file.](https://github.com/kaleidpixel/wp-image-optimizer/releases/download/latest/kp-image-optimizer.zip)
+2. Upload the "kp-image-optimizer" directory and all its contents to your /wp-content/plugins/ directory.
+3. Activate the plugin through the "Plugins" menu in WordPress.
 
 ## License
-* WP Image Optimizer (This program): GPL version 2 License or later version
+* KP Image Optimizer (This plugin): GPL version 2 License or later version
 * Image Optimizer: GPL version 2 License or later version  
   https://github.com/kaleidpixel/image-optimizer/blob/master/LICENSE
 * webp: BSD License  
