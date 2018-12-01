@@ -15,8 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once KP_IMAGE_OPTIMIZER_DIR . '/includes/class-image-optimizer.php';
-
 use KALEIDPIXEL\Module\ImageOptimizer;
 
 /**
@@ -94,7 +92,7 @@ class KP_ImageOptimizer {
 	 */
 	protected function __construct() {
 		$this->upload_dir             = wp_upload_dir();
-		$this->command_dir            = apply_filters( 'KP_IMAGE_OPTIMIZER_DIR_BIN', KP_IMAGE_OPTIMIZER_DIR . '/bin' );
+		$this->command_dir            = apply_filters( 'KP_IMAGE_OPTIMIZER_DIR_BIN', KP_IMAGE_OPTIMIZER_BIN );
 		$this->option_name            = 'kp_image_optimize';
 		$this->option_group           = 'kp_image_optimize';
 		$this->option                 = get_option( $this->option_name );
@@ -133,11 +131,11 @@ class KP_ImageOptimizer {
 		if ( is_admin() ) {
 			load_plugin_textdomain( 'kp-image-optimizer', false, plugin_basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages/' );
 		}
-    }
+	}
 
 	/**
 	 * Allow SVG Uploads
-     *
+	 *
 	 * @thanks @safe-svg
 	 *
 	 * @param $mimes
@@ -248,7 +246,7 @@ class KP_ImageOptimizer {
 	 * Load language file.
 	 */
 	public function load_plugin_textdomain() {
-    }
+	}
 
 	/**
 	 * Add admin menu.
@@ -345,7 +343,7 @@ class KP_ImageOptimizer {
 	 * Optimize all images.
 	 */
 	public function cron_all_file_optimize() {
-	    $ttl  = ini_get( 'max_execution_time' );
+		$ttl  = ini_get( 'max_execution_time' );
 		$mode = apply_filters( 'kp_image_optimizer_directory_scan_mode', '' );
 
 		set_time_limit( 0 );

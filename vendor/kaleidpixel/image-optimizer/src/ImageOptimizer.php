@@ -6,7 +6,7 @@
  * @author     KUCKLU <hello@kuck1u.me>
  * @copyright  2018 Kaleid Pixel
  * @license    GNU General Public License v2.0 or later version
- * @version    1.0.0
+ * @version    0.1.0
  **/
 
 namespace KALEIDPIXEL\Module;
@@ -36,7 +36,7 @@ class ImageOptimizer {
 	/**
 	 * @var string Path of the directory where command binaries are saved.
 	 */
-	public $command_dir = '/usr/local/bin';
+	public $command_dir = './bin';
 
 	/**
 	 * Instance.
@@ -90,8 +90,6 @@ class ImageOptimizer {
 
 	/**
 	 * Optimize all images.
-	 *
-	 * @param string $mode Select the scan mode in the directory.
 	 */
 	public function doing( $mode = '' ) {
 		$ttl = ini_get( 'max_execution_time' );
@@ -99,11 +97,12 @@ class ImageOptimizer {
 		set_time_limit( 0 );
 
 		switch ( $mode ) {
-			case 'glob':
-				$images = $this->get_file_list_in_glob();
-				break;
+			case 'iterator':
 			default:
 				$images = $this->get_file_list();
+				break;
+			case 'glob':
+				$images = $this->get_file_list_in_glob();
 				break;
 		}
 
@@ -132,19 +131,8 @@ class ImageOptimizer {
 			$iterator = new \RecursiveIteratorIterator( $iterator );
 			$iterator = new \RegexIterator( $iterator, '/^.+\.(jpe?g|png|gif|svg)$/i', \RecursiveRegexIterator::MATCH );
 
-			foreach ( $iterator as $info ) {
-				$file = $info->getPathname();
-
-				switch ( self::get_mime_type( $file ) ) {
-					case 'image/jpeg':
-					case 'image/png':
-					case 'image/gif':
-					case 'image/svg+xml':
-						$result[] = $file;
-						break;
-				}
-
-				unset( $file );
+			foreach ( $iterator as $path ) {
+				$result[] = $path[0];
 			}
 
 			unset( $iterator );

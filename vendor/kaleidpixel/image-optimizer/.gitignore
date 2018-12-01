@@ -102,4 +102,5 @@ jspm_packages/
 *.key
 .sass-cache/
 cache/
-
+vendor/
+composer.lock

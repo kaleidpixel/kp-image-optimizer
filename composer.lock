@@ -1,0 +1,101 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "9a3c85f85a9f7ea428da4c7e1a3e59c2",
+    "packages": [
+        {
+            "name": "enshrined/svg-sanitize",
+            "version": "0.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/darylldoyle/svg-sanitizer.git",
+                "reference": "e0cb5ad3abea5459e0962cf79a92d34714c74dfa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/darylldoyle/svg-sanitizer/zipball/e0cb5ad3abea5459e0962cf79a92d34714c74dfa",
+                "reference": "e0cb5ad3abea5459e0962cf79a92d34714c74dfa",
+                "shasum": ""
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "^0.1.2",
+                "phpunit/phpunit": "^6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "enshrined\\svgSanitize\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Daryll Doyle",
+                    "email": "daryll@enshrined.co.uk"
+                }
+            ],
+            "description": "An SVG sanitizer for PHP",
+            "time": "2018-10-01T17:11:02+00:00"
+        },
+        {
+            "name": "kaleidpixel/image-optimizer",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kaleidpixel/image-optimizer.git",
+                "reference": "22e8663993a34e34a9b5d23cb986c6645e5353a8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kaleidpixel/image-optimizer/zipball/22e8663993a34e34a9b5d23cb986c6645e5353a8",
+                "reference": "22e8663993a34e34a9b5d23cb986c6645e5353a8",
+                "shasum": ""
+            },
+            "require": {
+                "enshrined/svg-sanitize": "0.*",
+                "php": ">=5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "KALEIDPIXEL\\Module\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "KUCKLU",
+                    "email": "oss@kaleidpixel.jp",
+                    "homepage": "https://kuck1u.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Easily optimize images using PHP.",
+            "homepage": "https://github.com/kaleidpixel/image-optimizer",
+            "keywords": [
+                "image-optimizer",
+                "kaleidpixel"
+            ],
+            "time": "2018-12-01T05:16:36+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.6"
+    },
+    "platform-dev": []
+}

@@ -37,6 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'KP_IMAGE_OPTIMIZER_DIR', dirname( __FILE__ ) );
 define( 'KP_IMAGE_OPTIMIZER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
+define( 'KP_IMAGE_OPTIMIZER_BIN', KP_IMAGE_OPTIMIZER_DIR . '/vendor/kaleidpixel/image-optimizer/bin' );
 
 require_once KP_IMAGE_OPTIMIZER_DIR . '/vendor/autoload.php';
 require_once KP_IMAGE_OPTIMIZER_DIR . '/includes/class-kp-image-optimizer.php';
