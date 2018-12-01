@@ -97,21 +97,8 @@ class WP_LazyloadImage {
 	 * Load scripts.
 	 */
 	public function wp_enqueue_scripts() {
-		$threshold = (int) apply_filters( 'KP_IMAGE_OPTIMIZER_LAZYLOAD_OPTIONS_THRESHOLD', 70 );
-		$to_webp   = (int) apply_filters( 'KP_IMAGE_OPTIMIZER_LAZYLOAD_OPTIONS_2WEBP', true );
-
-		switch( $to_webp ) {
-			case true:
-			default:
-				$to_webp = '!0';
-				break;
-			case false:
-				$to_webp = '!1';
-				break;
-		}
-
 		wp_enqueue_script( 'kpio-lazyload', KP_IMAGE_OPTIMIZER_URL . '/assets/js/lazyload.min.js', array(), '8.17.0', true );
-		wp_add_inline_script( 'kpio-lazyload', "var kpio_ll = new LazyLoad({elements_selector:'.lazyload',threshold:{$threshold},to_webp:{$to_webp}});" );
+        wp_enqueue_script( 'kpio-lazyload-config', KP_IMAGE_OPTIMIZER_URL . '/assets/js/lazyload.config.min.js', array(), '0.1.0', true );
 	}
 
 	/**
