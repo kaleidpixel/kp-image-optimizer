@@ -57,6 +57,7 @@ class WP_LazyloadImage {
 		if ( apply_filters( 'KP_IMAGE_OPTIMIZER_LAZYLOAD_SWITCHER', true ) === true && ! is_admin() ) {
 			add_filter( 'wp_get_attachment_image_attributes', array( &$this, 'wp_get_attachment_image_attributes' ) );
 			add_filter( 'the_content', array( &$this, 'create_attr' ) );
+			add_filter( 'get_header_image_tag', array( &$this, 'create_attr' ) );
 			add_action( 'wp_enqueue_scripts', array( &$this, 'wp_enqueue_scripts' ) );
 			add_action( 'wp_head', array( &$this, 'wp_head' ) );
 		}
@@ -128,6 +129,19 @@ class WP_LazyloadImage {
 	 * @return string|null
 	 */
 	protected function __create_attr( $content = '' ) {
+		if ( ! empty( preg_match_all( '/(<img[^>]*)/', $content, $matches ) ) ) {
+			foreach ( $matches[1] as $k => $v ) {
+				if ( ! preg_match( '/(<img[^>]*)\s+class="([^"]*)"/', $v ) ) {
+					$v_temp  = preg_replace('/(<img[^>]*)\s+src="([^"]*)"/', '$1 src="$2" class="" ', $v );
+					$content = str_replace( $v, $v_temp, $content );
+
+					unset( $v_temp );
+				}
+
+				unset( $matches[1][ $k ] );
+			}
+		}
+
 		$content = preg_replace('/(<img[^>]*)\s+class="([^"]*)"/', '$1 class="$2 lazyload"', $content);
 		$content = preg_replace('/(<img[^>]*)\s+src=/', '$1 data-src=', $content);
 		$content = preg_replace('/(<img[^>]*)\s+srcset=/', '$1 data-srcset=', $content);
