@@ -256,15 +256,13 @@ class WP_ImageOptimizer {
 		$meta = get_post_meta( $post_id, '_wp_attachment_metadata', true );
 
 		if ( isset( $meta['file'] ) && ! empty( $meta['file'] ) ) {
-			$basename = basename( $meta['file'] );
-
-			$this->delete_webp_file( $meta['file'], $basename );
-
-			unset( $path, $file );
+			$this->delete_webp_file( $meta['file'], basename( $meta['file'] ) );
 
 			if ( isset( $meta['sizes'] ) && ! empty( $meta['sizes'] ) ) {
 				foreach ( $meta['sizes'] as $k => $v ) {
 					$this->delete_webp_file( $meta['file'], $v['file'] );
+
+                    unset( $meta['sizes'][ $k ] );
 				}
 			}
 		}
@@ -286,12 +284,6 @@ class WP_ImageOptimizer {
 		$file = path_join( $this->upload_dir['basedir'], $path );
 
 		return wp_delete_file_from_directory( $file, $this->upload_dir['basedir'] );
-	}
-
-	/**
-	 * Load language file.
-	 */
-	public function load_plugin_textdomain() {
 	}
 
 	/**
