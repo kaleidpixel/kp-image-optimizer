@@ -98,7 +98,7 @@ class WP_LazyloadImage {
 	 */
 	public function wp_enqueue_scripts() {
 		wp_enqueue_script( 'kpio-lazyload', KP_IMAGE_OPTIMIZER_URL . '/assets/js/lazyload.min.js', array(), '8.17.0', true );
-        wp_enqueue_script( 'kpio-lazyload-config', KP_IMAGE_OPTIMIZER_URL . '/assets/js/lazyload.config.min.js', array(), '0.1.0', true );
+		wp_enqueue_script( 'kpio-lazyload-config', KP_IMAGE_OPTIMIZER_URL . '/assets/js/lazyload.config.min.js', array(), '0.1.0', true );
 	}
 
 	/**
@@ -118,20 +118,34 @@ class WP_LazyloadImage {
 	protected function __create_attr( $content = '' ) {
 		if ( ! empty( preg_match_all( '/(<img[^>]*)/', $content, $matches ) ) ) {
 			foreach ( $matches[1] as $k => $v ) {
-				if ( ! preg_match( '/(<img[^>]*)\s+class="([^"]*)"/', $v ) ) {
-					$v_temp  = preg_replace('/(<img[^>]*)\s+src="([^"]*)"/', '$1 src="$2" class="" ', $v );
-					$content = str_replace( $v, $v_temp, $content );
+				if ( ! preg_match( '/(<img[^>]*)\s+class=["|\']([\w\-\s]*)["|\']/', $v ) ) {
+					$temp    = preg_replace( '/(<img[^>]*)\s+src=["|\']([^"|\']*)["|\']/', '$1 src="$2" class="" ', $v );
+					$content = str_replace( $v, $temp, $content );
+					$v       = $temp;
 
-					unset( $v_temp );
+					unset( $temp );
+				}
+
+				preg_match('/<img[^>]*\s+src=["|\']([^"|\']*)["|\']/', $v, $src );
+
+				$lazyload = true;
+				$src      = wp_parse_url( $src[1] );
+				$wp_url   = wp_parse_url( home_url() );
+
+				if ( ! isset( $src['host'] ) || $src['host'] !== $wp_url['host'] ) {
+					$lazyload = false;
+				}
+
+				if ( $lazyload === true ) {
+					$temp    = preg_replace( '/(<img[^>]*)\s+class=["|\']([\w\-\s]*)["|\']/', '$1 class="$2 lazyload"', $v );
+					$temp    = preg_replace( '/(<img[^>]*)\s+src=/', '$1 data-src=', $temp );
+					$temp    = preg_replace( '/(<img[^>]*)\s+srcset=/', '$1 data-srcset=', $temp );
+					$content = str_replace( $v, $temp, $content );
 				}
 
 				unset( $matches[1][ $k ] );
 			}
 		}
-
-		$content = preg_replace('/(<img[^>]*)\s+class="([^"]*)"/', '$1 class="$2 lazyload"', $content);
-		$content = preg_replace('/(<img[^>]*)\s+src=/', '$1 data-src=', $content);
-		$content = preg_replace('/(<img[^>]*)\s+srcset=/', '$1 data-srcset=', $content);
 
 		return $content;
 	}
