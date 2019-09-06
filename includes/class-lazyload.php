@@ -54,7 +54,11 @@ class WP_LazyloadImage {
 	 * LazyloadImage constructor.
 	 */
 	protected function __construct() {
-		if ( apply_filters( 'KP_IMAGE_OPTIMIZER_LAZYLOAD_SWITCHER', true ) === true && ! is_admin() ) {
+		if ( is_admin() ) {
+			return;
+		}
+
+		if ( apply_filters( 'KP_IMAGE_OPTIMIZER_LAZYLOAD_SWITCHER', true ) === true ) {
 			add_filter( 'wp_get_attachment_image_attributes', array( &$this, 'wp_get_attachment_image_attributes' ) );
 			add_filter( 'the_content', array( &$this, 'create_attr' ) );
 			add_filter( 'get_header_image_tag', array( &$this, 'create_attr' ) );
@@ -72,11 +76,21 @@ class WP_LazyloadImage {
 	 */
 	public function wp_get_attachment_image_attributes( $attr ) {
 		if ( ! is_admin() ) {
-			$attr['data-src']    = $attr['src'];
-			$attr['data-srcset'] = $attr['srcset'];
-			$attr['class']       = "{$attr['class']} lazyload";
+			if ( isset( $attr['src'] ) ) {
+				$attr['data-src'] = $attr['src'];
 
-			unset( $attr['src'], $attr['srcset'] );
+				unset( $attr['src'] );
+			}
+
+			if ( isset( $attr['srcset'] ) ) {
+				$attr['data-srcset'] = $attr['srcset'];
+
+				unset( $attr['srcset'] );
+			}
+
+			if ( isset( $attr['class'] ) ) {
+				$attr['class'] = "{$attr['class']} lazyload";
+			}
 		}
 
 		return $attr;
@@ -126,21 +140,16 @@ class WP_LazyloadImage {
 					unset( $temp );
 				}
 
-				preg_match('/<img[^>]*\s+src=["|\']([^"|\']*)["|\']/', $v, $src );
+				if ( preg_match( '/<img[^>]*\s+src=["|\']([^"|\']*)["|\']/', $v, $src ) ) {
+					$src    = wp_parse_url( $src[1] );
+					$wp_url = wp_parse_url( home_url() );
 
-				$lazyload = true;
-				$src      = wp_parse_url( $src[1] );
-				$wp_url   = wp_parse_url( home_url() );
-
-				if ( ! isset( $src['host'] ) || $src['host'] !== $wp_url['host'] ) {
-					$lazyload = false;
-				}
-
-				if ( $lazyload === true ) {
-					$temp    = preg_replace( '/(<img[^>]*)\s+class=["|\']([\w\-\s]*)["|\']/', '$1 class="$2 lazyload"', $v );
-					$temp    = preg_replace( '/(<img[^>]*)\s+src=/', '$1 data-src=', $temp );
-					$temp    = preg_replace( '/(<img[^>]*)\s+srcset=/', '$1 data-srcset=', $temp );
-					$content = str_replace( $v, $temp, $content );
+					if ( isset( $src['host'] ) && $src['host'] === $wp_url['host'] ) {
+						$temp    = preg_replace( '/(<img[^>]*)\s+class=["|\']([\w\-\s]*)["|\']/', '$1 class="$2 lazyload"', $v );
+						$temp    = preg_replace( '/(<img[^>]*)\s+src=/', '$1 data-src=', $temp );
+						$temp    = preg_replace( '/(<img[^>]*)\s+srcset=/', '$1 data-srcset=', $temp );
+						$content = str_replace( $v, $temp, $content );
+					}
 				}
 
 				unset( $matches[1][ $k ] );
