@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a3c85f85a9f7ea428da4c7e1a3e59c2",
+    "content-hash": "723e5db8f6bcff974f613a897b9f0212",
     "packages": [
         {
             "name": "enshrined/svg-sanitize",
@@ -46,50 +46,6 @@
             ],
             "description": "An SVG sanitizer for PHP",
             "time": "2020-01-20T01:34:17+00:00"
-        },
-        {
-            "name": "kaleidpixel/image-optimizer",
-            "version": "0.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kaleidpixel/image-optimizer.git",
-                "reference": "21e0b5ab381a65bdb6722f92e1944ed801219710"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kaleidpixel/image-optimizer/zipball/21e0b5ab381a65bdb6722f92e1944ed801219710",
-                "reference": "21e0b5ab381a65bdb6722f92e1944ed801219710",
-                "shasum": ""
-            },
-            "require": {
-                "enshrined/svg-sanitize": "0.*",
-                "php": ">=5.6"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "KALEIDPIXEL\\Module\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "KUCKLU",
-                    "email": "oss@kaleidpixel.jp",
-                    "homepage": "https://www.kaleidpixel.jp",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Easily optimize images using PHP.",
-            "homepage": "https://github.com/kaleidpixel/image-optimizer",
-            "keywords": [
-                "image-optimizer",
-                "kaleidpixel"
-            ],
-            "time": "2020-01-28T16:46:47+00:00"
         }
     ],
     "packages-dev": [],
