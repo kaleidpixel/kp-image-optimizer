@@ -78,8 +78,7 @@ class WP_LazyloadImage {
 		if ( ! is_admin() ) {
 			if ( isset( $attr['src'] ) ) {
 				$attr['data-src'] = $attr['src'];
-
-				unset( $attr['src'] );
+                $attr['src']      = 'data:image/gif;base64,R0lGODlhAQABAGAAACH5BAEKAP8ALAAAAAABAAEAAAgEAP8FBAA7';
 			}
 
 			if ( isset( $attr['srcset'] ) ) {
@@ -119,7 +118,7 @@ class WP_LazyloadImage {
 	 * Echo style.
 	 */
 	public function wp_head() {
-		echo '<style>img:not([src]):not([srcset]){visibility: hidden;}</style>';
+        echo '<style>.lazyload:not(.loaded){visibility: hidden;}</style>';
 	}
 
 	/**
@@ -146,7 +145,7 @@ class WP_LazyloadImage {
 
 					if ( isset( $src['host'] ) && $src['host'] === $wp_url['host'] ) {
 						$temp    = preg_replace( '/(<img[^>]*)\s+class=["|\']([\w\-\s]*)["|\']/', '$1 class="$2 lazyload"', $v );
-						$temp    = preg_replace( '/(<img[^>]*)\s+src=/', '$1 data-src=', $temp );
+						$temp    = preg_replace( '/(<img[^>]*)\s+src=/', '$1 src="data:image/gif;base64,R0lGODlhAQABAGAAACH5BAEKAP8ALAAAAAABAAEAAAgEAP8FBAA7" data-src=', $temp );
 						$temp    = preg_replace( '/(<img[^>]*)\s+srcset=/', '$1 data-srcset=', $temp );
 						$content = str_replace( $v, $temp, $content );
 					}
