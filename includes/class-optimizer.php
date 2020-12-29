@@ -3,7 +3,7 @@
  * PHP 5.6 or later
  *
  * @package    KALEIDPIXEL
- * @author     KUCKLU <oss@kaleidpixel.jp>
+ * @author     KUCKLU <kuck1u@users.noreply.github.com>
  * @copyright  2018 Kaleid Pixel
  * @license    GNU General Public License v2.0 or later version
  * @version    0.0.1
@@ -359,6 +359,8 @@ class WP_ImageOptimizer {
 	 * @return mixed
 	 */
 	public function cron_event_register( $options ) {
+		set_time_limit( 0 );
+
 		if ( isset( $options['process'] ) ) {
 			$now                = time();
 			$run                = false;

@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/kaleidpixel/wp-image-optimizer
  * Description: This plugin might have the power to shift the world beyond Divergence 1%.
  * Author: Kaleid Pixel (KUCKLU)
- * Version: 0.1.8
+ * Version: 0.1.9
  * Author URI: https://www.kaleidpixel.jp
  * Domain Path: /languages
  * Text Domain: kp-image-optimizer
@@ -14,7 +14,7 @@
  * @package    WordPress
  * @subpackage KP Image Optimizer
  * @since      0.0.1
- * @author     KUCKLU <oss@kaleidpixel.jp>
+ * @author     KUCKLU <kuck1u@users.noreply.github.com>
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
