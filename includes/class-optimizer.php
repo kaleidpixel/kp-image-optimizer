@@ -381,12 +381,11 @@ class WP_ImageOptimizer {
 	 * Optimize all images.
 	 */
 	public function cron_all_file_optimize() {
-		$ttl  = ini_get( 'max_execution_time' );
-		$mode = apply_filters( 'kp_image_optimizer_directory_scan_mode', '' );
-
 		set_time_limit( 0 );
 
+		$mode                    = apply_filters( 'kp_image_optimizer_directory_scan_mode', '' );
 		$this->option['process'] = 'true';
+
 		update_option( $this->option_name, $this->option );
 
 		switch ( $mode ) {
@@ -415,12 +414,9 @@ class WP_ImageOptimizer {
 			}
 		}
 
-		sleep( 1 );
-
 		$this->option['process'] = 'false';
-		update_option( $this->option_name, $this->option, false );
 
-		set_time_limit( $ttl );
+		update_option( $this->option_name, $this->option, false );
 	}
 
 	/**
